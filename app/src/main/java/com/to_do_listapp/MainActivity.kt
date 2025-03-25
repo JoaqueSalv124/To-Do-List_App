@@ -76,7 +76,9 @@ class MainActivity : AppCompatActivity() {
             ) {
                 val itemView = viewHolder.itemView
                 val paint = Paint().apply { color = Color.RED }
-                val icon = ContextCompat.getDrawable(this@MainActivity, android.R.drawable.ic_delete)!!
+                val icon = ContextCompat.getDrawable(this@MainActivity,
+                    R.drawable.baseline_delete_24
+                )!!
 
                 // Draw red background only when swiping
                 if (dX < 0) {  // Ensures it's swiping left

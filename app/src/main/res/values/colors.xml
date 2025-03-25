@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- Light Mode Colors -->
+    <color name="light_primary">#6200EE</color>
+    <color name="light_background">#FFFFFF</color>
+    <color name="light_text">#000000</color>
+
+    <!-- Dark Mode Colors -->
+    <color name="dark_primary">#BB86FC</color>
+    <color name="dark_background">#121212</color>
+    <color name="dark_text">#FFFFFF</color>
+
+    <!-- Common Colors -->
+    <color name="accent">#03DAC5</color>
     <color name="unicorn">#d0b3cc</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
 </resources>
