@@ -46,20 +46,22 @@
 
     <HorizontalScrollView
         android:id="@+id/daysScrollView"
-        android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_width="408dp"
+        android:layout_height="121dp"
         android:layout_marginTop="10dp"
-        app:layout_constraintTop_toBottomOf="@id/yearSpinner"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/yearSpinner"
+        app:layout_constraintVertical_bias="0.034">
 
         <LinearLayout
             android:id="@+id/daysContainer"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
             android:gravity="center_vertical"
+            android:orientation="horizontal"
             android:padding="10dp" />
     </HorizontalScrollView>
 
