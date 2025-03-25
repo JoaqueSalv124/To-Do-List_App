@@ -10,14 +10,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-class TaskAdapter(private val context: Context, private val taskList: MutableList<Task>) :
+class TaskAdapter(private val context: Context) :
     RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
 
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("task_prefs", Context.MODE_PRIVATE)
 
+    private val taskList = mutableListOf<Task>()  // ✅ Stores ALL tasks
+    private var filteredTasks = mutableListOf<Task>()  // ✅ Stores tasks for selected date
+
     init {
-        loadTasks() // Load tasks when adapter is created
+        loadTasks()  // ✅ Load saved tasks when adapter is initialized
     }
 
     class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -30,46 +33,52 @@ class TaskAdapter(private val context: Context, private val taskList: MutableLis
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        val task = taskList[position]
+        val task = filteredTasks[position]
         holder.taskCheckBox.text = task.description
         holder.taskCheckBox.isChecked = task.isCompleted
 
         holder.itemView.setOnClickListener {
             task.isCompleted = !task.isCompleted
             holder.taskCheckBox.isChecked = task.isCompleted
-            saveTasks() // Save updated list
+            saveTasks()
         }
 
         holder.taskCheckBox.setOnCheckedChangeListener(null)
         holder.taskCheckBox.setOnCheckedChangeListener { _, isChecked ->
-            taskList[position].isCompleted = isChecked
-            saveTasks() // Save updated list
+            filteredTasks[position].isCompleted = isChecked
+            saveTasks()
         }
     }
 
-    override fun getItemCount(): Int = taskList.size
+    override fun getItemCount(): Int = filteredTasks.size  // ✅ Show only filtered tasks
 
     fun addTask(task: Task) {
-        taskList.add(task)
-        notifyItemInserted(taskList.size - 1)
-        saveTasks() // Save when a new task is added
+        taskList.add(task)  // ✅ Add to the full list
+        saveTasks()
+        filterTasks(task.date)  // ✅ Update filtered list for selected date
     }
 
     fun removeTask(position: Int) {
-        taskList.removeAt(position)
-        notifyItemRemoved(position)
-        saveTasks() // Save when a task is removed
+        val removedTask = filteredTasks[position]  // Find task in filtered list
+        taskList.removeIf { it.description == removedTask.description && it.date == removedTask.date }
+        saveTasks()
+        filterTasks(removedTask.date)  // ✅ Refresh the filtered list
+    }
+
+    fun filterTasks(selectedDate: String) {
+        filteredTasks = taskList.filter { it.date == selectedDate }.toMutableList()
+        notifyDataSetChanged()
     }
 
     private fun saveTasks() {
         val editor = sharedPreferences.edit()
         val gson = Gson()
-        val json = gson.toJson(taskList) // Convert task list to JSON
+        val json = gson.toJson(taskList)
         editor.putString("tasks", json)
         editor.apply()
     }
 
-    private fun loadTasks() {
+    fun loadTasks() {
         val gson = Gson()
         val json = sharedPreferences.getString("tasks", null)
         val type = object : TypeToken<MutableList<Task>>() {}.type
@@ -79,4 +88,3 @@ class TaskAdapter(private val context: Context, private val taskList: MutableLis
         notifyDataSetChanged()
     }
 }
-

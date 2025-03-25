@@ -17,7 +17,7 @@ import java.util.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.DividerItemDecoration
 
-
+private var selectedDate: String = ""  // Stores the currently selected date
 
 
 class MainActivity : AppCompatActivity() {
@@ -155,7 +155,7 @@ class MainActivity : AppCompatActivity() {
         updateCalendar(calendar.get(Calendar.MONTH), calendar.get(Calendar.YEAR), daysContainer)
 
 
-        taskAdapter = TaskAdapter(this, mutableListOf())
+        taskAdapter = TaskAdapter(this)  // ✅ Correct, since TaskAdapter handles its own list
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = taskAdapter
 
@@ -170,42 +170,40 @@ class MainActivity : AppCompatActivity() {
     private fun updateCalendar(month: Int, year: Int, daysContainer: LinearLayout) {
         daysContainer.removeAllViews()
 
-
         val calendar = Calendar.getInstance()
         calendar.set(year, month, 1)
-
 
         val daysOfWeek = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
         val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
 
-
-        var dayCount = calendar.get(Calendar.DAY_OF_WEEK) - 2 // Adjust starting day for Monday-first
-        if (dayCount < 0) dayCount = 6 // Convert Sunday (index 0) to last position
-
+        var dayCount = calendar.get(Calendar.DAY_OF_WEEK) - 2
+        if (dayCount < 0) dayCount = 6
 
         var currentDay = 1
 
-
         for (i in 1..daysInMonth) {
             val dayName = daysOfWeek[dayCount % 7]
+            val formattedDate = String.format("%04d-%02d-%02d", year, month + 1, currentDay) // YYYY-MM-DD
+
             val dayButton = Button(this).apply {
                 text = "$dayName\n$currentDay"
-                textSize = 12f  // Adjusted for better fit
+                textSize = 12f
                 gravity = Gravity.CENTER
                 layoutParams = LinearLayout.LayoutParams(
-                    240,  // Adjusted width for better text fitting
-                    LinearLayout.LayoutParams.MATCH_PARENT  // Full height
+                    240,
+                    LinearLayout.LayoutParams.MATCH_PARENT
                 ).apply {
                     setMargins(5, 5, 5, 5)
                 }
-                setPadding(10, 5, 10, 5) // Optimized padding
-                background = ContextCompat.getDrawable(context, android.R.drawable.btn_default)
-                contentDescription = "Day $currentDay"
-                setOnClickListener { view ->
-                    onDayClicked(view)
+                setPadding(10, 5, 10, 5)
+                background = ContextCompat.getDrawable(context, R.drawable.ripple_calendar_button)
+
+                setOnClickListener {
+                    selectedDate = formattedDate  // ✅ Store selected date
+                    taskAdapter.filterTasks(selectedDate)  // ✅ Show tasks for this date
+                    Toast.makeText(context, "Showing tasks for $selectedDate", Toast.LENGTH_SHORT).show()
                 }
             }
-
 
             daysContainer.addView(dayButton)
             currentDay++
@@ -213,11 +211,16 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        Log.d("Calendar", "Total Views Added: ${daysContainer.childCount}")
+    Log.d("Calendar", "Total Views Added: ${daysContainer.childCount}")
     }
 
 
     private fun showAddTaskDialog() {
+        if (selectedDate.isEmpty()) {
+            Toast.makeText(this, "Please select a date first!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_task, null)
         val taskInput = dialogView.findViewById<EditText>(R.id.editTask)
 
@@ -227,8 +230,7 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton("Add") { dialog, _ ->
                 val taskText = taskInput.text.toString().trim()
                 if (taskText.isNotEmpty()) {
-                    val newTask = Task(taskText, false)
-                    Log.d("DEBUG", "Adding task: $taskText")  // ✅ Check if task is being captured
+                    val newTask = Task(taskText, false, selectedDate)  // ✅ Assign task to selected date
                     taskAdapter.addTask(newTask)
                 } else {
                     Toast.makeText(this, "Task cannot be empty!", Toast.LENGTH_SHORT).show()
@@ -238,7 +240,6 @@ class MainActivity : AppCompatActivity() {
             .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
             .show()
     }
-
 
 
 
