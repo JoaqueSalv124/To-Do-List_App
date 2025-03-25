@@ -30,7 +30,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
         val daysContainer = findViewById<LinearLayout>(R.id.daysContainer)
         val monthSpinner = findViewById<Spinner>(R.id.monthSpinner)
         val yearSpinner = findViewById<Spinner>(R.id.yearSpinner)

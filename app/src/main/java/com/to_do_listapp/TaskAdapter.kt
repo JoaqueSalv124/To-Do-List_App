@@ -70,6 +70,7 @@ class TaskAdapter(private val context: Context) :
         notifyDataSetChanged()
     }
 
+
     private fun saveTasks() {
         val editor = sharedPreferences.edit()
         val gson = Gson()
