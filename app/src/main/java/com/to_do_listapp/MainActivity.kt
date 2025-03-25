@@ -83,15 +83,15 @@ class MainActivity : AppCompatActivity() {
             val dayName = daysOfWeek[dayCount % 7]
             val dayButton = Button(this).apply {
                 text = "$dayName\n$currentDay"
-                textSize = 14f  // Reduced text size to fit text properly
+                textSize = 12f  // Adjusted for better fit
                 gravity = Gravity.CENTER
                 layoutParams = LinearLayout.LayoutParams(
-                    120,  // Reduced button width slightly
-                    LinearLayout.LayoutParams.MATCH_PARENT
+                    140,  // Adjusted width for better text fitting
+                    LinearLayout.LayoutParams.MATCH_PARENT  // Full height
                 ).apply {
                     setMargins(5, 5, 5, 5)
                 }
-                setPadding(10, 10, 10, 10)
+                setPadding(10, 5, 10, 5) // Optimized padding
                 background = ContextCompat.getDrawable(context, android.R.drawable.btn_default)
                 contentDescription = "Day $currentDay"
                 setOnClickListener { view ->
@@ -113,4 +113,3 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, "Clicked on $day", Toast.LENGTH_SHORT).show()
     }
 }
-
