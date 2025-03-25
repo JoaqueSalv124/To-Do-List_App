@@ -16,9 +16,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.DividerItemDecoration
+import java.text.SimpleDateFormat
+import java.util.*
+
 
 private var selectedDate: String = ""  // Stores the currently selected date
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -176,6 +178,9 @@ class MainActivity : AppCompatActivity() {
         val daysOfWeek = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
         val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
 
+        val todayTextView = findViewById<TextView>(R.id.Today)  // ✅ Reference to TextView
+        val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date()) // ✅ Get today's date
+
         var dayCount = calendar.get(Calendar.DAY_OF_WEEK) - 2
         if (dayCount < 0) dayCount = 6
 
@@ -183,7 +188,7 @@ class MainActivity : AppCompatActivity() {
 
         for (i in 1..daysInMonth) {
             val dayName = daysOfWeek[dayCount % 7]
-            val formattedDate = String.format("%04d-%02d-%02d", year, month + 1, currentDay) // YYYY-MM-DD
+            val formattedDate = String.format("%04d-%02d-%02d", year, month + 1, currentDay) // ✅ YYYY-MM-DD
 
             val dayButton = Button(this).apply {
                 text = "$dayName\n$currentDay"
@@ -201,7 +206,22 @@ class MainActivity : AppCompatActivity() {
                 setOnClickListener {
                     selectedDate = formattedDate  // ✅ Store selected date
                     taskAdapter.filterTasks(selectedDate)  // ✅ Show tasks for this date
-                    Toast.makeText(context, "Showing tasks for $selectedDate", Toast.LENGTH_SHORT).show()
+
+                    // ✅ Convert YYYY-MM-DD to "Month Day, Year"
+                    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    val dateObject = dateFormat.parse(selectedDate)
+
+                    val newFormat = SimpleDateFormat("MMMM d, yyyy", Locale.getDefault()) // ✅ New Format
+                    val displayDate = newFormat.format(dateObject!!) // Convert to formatted string
+
+                    // ✅ Update "Today" TextView based on selected date
+                    if (selectedDate == currentDate) {
+                        todayTextView.text = "Today"
+                    } else {
+                        todayTextView.text = displayDate  // Show formatted date
+                    }
+
+                    Toast.makeText(context, "Showing tasks for $displayDate", Toast.LENGTH_SHORT).show()
                 }
             }
 
