@@ -20,9 +20,23 @@ class TaskAdapter(private val taskList: MutableList<Task>) :
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         val task = taskList[position]
+
+        holder.taskCheckBox.text = task.description
         holder.taskCheckBox.isChecked = task.isCompleted
-        holder.taskCheckBox.text = task.description // ✅ Ensure text is displayed correctly
+
+        // When clicking anywhere in the item, toggle the checkbox
+        holder.itemView.setOnClickListener {
+            task.isCompleted = !task.isCompleted
+            holder.taskCheckBox.isChecked = task.isCompleted
+        }
+
+        // Prevent multiple event triggers by setting listener null before resetting it
+        holder.taskCheckBox.setOnCheckedChangeListener(null)
+        holder.taskCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            taskList[position].isCompleted = isChecked
+        }
     }
+
 
 
     override fun getItemCount(): Int = taskList.size
