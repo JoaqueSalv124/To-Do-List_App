@@ -1,6 +1,5 @@
 package com.to_do_listapp
 
-import com.to_do_listapp.Task
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,7 +23,6 @@ class TaskAdapter(private val taskList: MutableList<Task>) :
         holder.taskCheckBox.text = task.description
         holder.taskCheckBox.isChecked = task.isCompleted
 
-        // Update task status when checkbox is clicked
         holder.taskCheckBox.setOnCheckedChangeListener { _, isChecked ->
             taskList[position].isCompleted = isChecked
         }
@@ -34,7 +32,6 @@ class TaskAdapter(private val taskList: MutableList<Task>) :
 
     fun addTask(task: Task) {
         taskList.add(task)
-        notifyItemInserted(taskList.size - 1)
+        notifyItemInserted(taskList.size - 1) // ✅ Forces RecyclerView to refresh
     }
 }
-
