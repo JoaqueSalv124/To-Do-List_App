@@ -45,62 +45,62 @@
             android:paddingStart="20dp"
             android:paddingEnd="20dp">
 
-            <!-- Monday to Sunday with larger text and more spacing -->
-            <TextView
+            <!-- Monday to Sunday buttons -->
+            <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Mon"
                 android:textSize="24sp"
                 android:contentDescription="Monday"
-                android:paddingEnd="30dp" />
+                android:layout_marginEnd="30dp"/>
 
-            <TextView
+            <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tue"
                 android:textSize="24sp"
                 android:contentDescription="Tuesday"
-                android:paddingEnd="30dp" />
+                android:layout_marginEnd="30dp"/>
 
-            <TextView
+            <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Wed"
                 android:textSize="24sp"
                 android:contentDescription="Wednesday"
-                android:paddingEnd="30dp" />
+                android:layout_marginEnd="30dp"/>
 
-            <TextView
+            <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Thu"
                 android:textSize="24sp"
                 android:contentDescription="Thursday"
-                android:paddingEnd="30dp" />
+                android:layout_marginEnd="30dp"/>
 
-            <TextView
+            <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Fri"
                 android:textSize="24sp"
                 android:contentDescription="Friday"
-                android:paddingEnd="30dp" />
+                android:layout_marginEnd="30dp"/>
 
-            <TextView
+            <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sat"
                 android:textSize="24sp"
                 android:contentDescription="Saturday"
-                android:paddingEnd="30dp" />
+                android:layout_marginEnd="30dp"/>
 
-            <TextView
+            <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sun"
                 android:textSize="24sp"
                 android:contentDescription="Sunday"
-                android:paddingEnd="30dp" />
+                android:layout_marginEnd="30dp"/>
 
         </LinearLayout>
     </HorizontalScrollView>
