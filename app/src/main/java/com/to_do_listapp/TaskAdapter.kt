@@ -20,13 +20,10 @@ class TaskAdapter(private val taskList: MutableList<Task>) :
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         val task = taskList[position]
-        holder.taskCheckBox.text = task.description
         holder.taskCheckBox.isChecked = task.isCompleted
-
-        holder.taskCheckBox.setOnCheckedChangeListener { _, isChecked ->
-            taskList[position].isCompleted = isChecked
-        }
+        holder.taskCheckBox.text = task.description // ✅ Ensure text is displayed correctly
     }
+
 
     override fun getItemCount(): Int = taskList.size
 

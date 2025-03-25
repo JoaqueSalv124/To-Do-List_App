@@ -178,8 +178,8 @@ class MainActivity : AppCompatActivity() {
                 val taskText = taskInput.text.toString().trim()
                 if (taskText.isNotEmpty()) {
                     val newTask = Task(taskText, false)
-                    taskAdapter.addTask(newTask.toString()) // ✅ Adds task to RecyclerView
-                    Log.d("TaskAdded", "Task: $taskText added") // ✅ Debugging Logcat
+                    Log.d("DEBUG", "Adding task: $taskText")  // ✅ Check if task is being captured
+                    taskAdapter.addTask(newTask)
                 } else {
                     Toast.makeText(this, "Task cannot be empty!", Toast.LENGTH_SHORT).show()
                 }
@@ -188,6 +188,7 @@ class MainActivity : AppCompatActivity() {
             .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
             .show()
     }
+
 
 
 

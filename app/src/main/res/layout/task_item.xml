@@ -7,12 +7,21 @@
     android:padding="10dp"
     android:gravity="center_vertical">
 
-    <CheckBox android:id="@+id/taskCheckBox"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:textSize="18sp"
-    android:layout_marginEnd="8dp"/>
+    <CheckBox
+        android:id="@+id/taskCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:layout_marginEnd="8dp"/>
+
+    <TextView
+        android:id="@+id/taskText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:text="Sample Task"/>
 </LinearLayout>
+
 
 
 
