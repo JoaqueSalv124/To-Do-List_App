@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 
 
 
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var taskAdapter: TaskAdapter
@@ -152,7 +153,7 @@ class MainActivity : AppCompatActivity() {
         updateCalendar(calendar.get(Calendar.MONTH), calendar.get(Calendar.YEAR), daysContainer)
 
 
-        taskAdapter = TaskAdapter(mutableListOf())
+        taskAdapter = TaskAdapter(this, mutableListOf())
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = taskAdapter
 
