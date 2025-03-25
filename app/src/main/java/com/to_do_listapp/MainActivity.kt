@@ -1,60 +1,53 @@
 package com.to_do_listapp
 
+import com.to_do_listapp.Task
+import android.app.AlertDialog
 import android.os.Bundle
-import android.view.Gravity
-import android.view.View
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.Toast
+import android.view.LayoutInflater
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import androidx.recyclerview.widget.DividerItemDecoration
+
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var taskAdapter: TaskAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val daysContainer = findViewById<LinearLayout>(R.id.daysContainer)
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+        val fabAddTask = findViewById<FloatingActionButton>(R.id.fabAddTask)
 
-        val daysOfWeek = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-        val totalDays = 30
+        taskAdapter = TaskAdapter(mutableListOf())
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
+        recyclerView.adapter = taskAdapter
 
-        for (day in 1..totalDays) {
-            val dayLayout = LinearLayout(this).apply {
-                orientation = LinearLayout.VERTICAL
-                gravity = Gravity.CENTER
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.MATCH_PARENT
-                ).apply {
-                    setMargins(15, 0, 15, 0)
-                }
-            }
-
-            val dayButton = Button(this).apply {
-                val dayName = daysOfWeek[(day - 1) % 7]
-                text = "$dayName\n$day"  // Combining day name and day number
-                textSize = 24f  // Adjust text size to fit
-                gravity = Gravity.CENTER
-                setPadding(30, 30, 30, 30)  // Padding to ensure text is not touching the edges
-                background = resources.getDrawable(android.R.drawable.btn_default) // Adding background color
-                layoutParams = LinearLayout.LayoutParams(250, 250).apply {
-                    setMargins(10, 10, 10, 10) // Adjust margin to separate buttons
-                }
-                contentDescription = "Day $day"
-                setOnClickListener { view ->
-                    onDayClicked(view)
-                }
-            }
-
-            dayLayout.addView(dayButton)
-            daysContainer.addView(dayLayout)
+        fabAddTask.setOnClickListener {
+            showAddTaskDialog()
         }
     }
 
-    private fun onDayClicked(view: View) {
-        val button = view as Button
-        val day = button.text
-        Toast.makeText(this, "Clicked on $day", Toast.LENGTH_SHORT).show()
+    private fun showAddTaskDialog() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_task, null)
+        val taskInput = dialogView.findViewById<EditText>(R.id.editTask)
+
+        AlertDialog.Builder(this)
+            .setTitle("Add Task")
+            .setView(dialogView)
+            .setPositiveButton("Add") { dialog, _ ->
+                val taskText = taskInput.text.toString().trim()
+                if (taskText.isNotEmpty()) {
+                    taskAdapter.addTask(Task(taskText, false))
+                }
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+            .show()
     }
 }
+
