@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.*
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.DividerItemDecoration
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -35,7 +37,6 @@ class MainActivity : AppCompatActivity() {
 
         val fab = findViewById<FloatingActionButton>(R.id.fabAddTask)
         fab.visibility = View.VISIBLE // ✅ Ensure FAB is always visible
-
 
 
         // Populate the month spinner with custom adapter to increase text size
@@ -110,6 +111,8 @@ class MainActivity : AppCompatActivity() {
         taskAdapter = TaskAdapter(mutableListOf())
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = taskAdapter
+
+        recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
 
         fabAddTask.setOnClickListener {
             showAddTaskDialog()
