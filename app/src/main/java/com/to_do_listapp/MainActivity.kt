@@ -165,7 +165,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     private fun updateCalendar(month: Int, year: Int, daysContainer: LinearLayout) {
         daysContainer.removeAllViews()
 
