@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">To-Do-List App</string>
+    <string name="task_list_desc">List of tasks to complete</string>
+    <string name="days_scroll_desc">Scrollable list of days to select tasks</string>
+    <string name="add_task_desc">Button to add a new task</string>
+
 </resources>
