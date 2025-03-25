@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
 
         val calendar = Calendar.getInstance()
 
-        // Populate the month spinner with custom adapter to increase text size
+        // Populate the month spinner
         val months = listOf(
             "January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"
@@ -31,51 +31,34 @@ class MainActivity : AppCompatActivity() {
         }
         monthSpinner.adapter = monthAdapter
 
-        // Populate the year spinner with custom adapter to increase text size
+        // Populate the year spinner
         val years = (2020..2030).toList()
         val yearAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, years).apply {
             setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
         yearSpinner.adapter = yearAdapter
 
-        // Set custom text size for spinner items
-        fun setSpinnerTextSize(spinner: Spinner) {
-            spinner.viewTreeObserver.addOnGlobalLayoutListener {
-                for (i in 0 until spinner.childCount) {
-                    (spinner.getChildAt(i) as? TextView)?.textSize = 18f
-                }
-            }
-        }
-        setSpinnerTextSize(monthSpinner)
-        setSpinnerTextSize(yearSpinner)
-
-        // Set default to the current month and year
+        // Set default month and year
         monthSpinner.setSelection(calendar.get(Calendar.MONTH))
         yearSpinner.setSelection(calendar.get(Calendar.YEAR) - 2020)
 
-        // Update the calendar based on the selected month and year
+        // Update calendar when month or year is selected
         monthSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parentView: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val selectedMonth = position
                 val selectedYear = yearSpinner.selectedItem.toString().toInt()
-                updateCalendar(selectedMonth, selectedYear, daysContainer)
+                updateCalendar(position, selectedYear, daysContainer)
             }
 
-            override fun onNothingSelected(parentView: AdapterView<*>?) {
-                // Do nothing
-            }
+            override fun onNothingSelected(parentView: AdapterView<*>?) {}
         }
 
         yearSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parentView: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val selectedYear = yearSpinner.selectedItem.toString().toInt()
                 val selectedMonth = monthSpinner.selectedItemPosition
-                updateCalendar(selectedMonth, selectedYear, daysContainer)
+                updateCalendar(selectedMonth, yearSpinner.selectedItem.toString().toInt(), daysContainer)
             }
 
-            override fun onNothingSelected(parentView: AdapterView<*>?) {
-                // Do nothing
-            }
+            override fun onNothingSelected(parentView: AdapterView<*>?) {}
         }
 
         // Initial calendar display
@@ -83,49 +66,32 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateCalendar(month: Int, year: Int, daysContainer: LinearLayout) {
-        daysContainer.removeAllViews() // Clear previous days
+        daysContainer.removeAllViews()
 
         val calendar = Calendar.getInstance()
         calendar.set(year, month, 1)
 
-        val startDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
         val daysOfWeek = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-        val adjustedStartDay = if (startDayOfWeek == Calendar.SUNDAY) 6 else startDayOfWeek - 2
         val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
 
-        val dayRow = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-        }
+        var dayCount = calendar.get(Calendar.DAY_OF_WEEK) - 2 // Adjust starting day for Monday-first
+        if (dayCount < 0) dayCount = 6 // Convert Sunday (index 0) to last position
 
-        var dayCount = 0
         var currentDay = 1
 
         for (i in 1..daysInMonth) {
-            if (i == 1) {
-                for (j in 0 until adjustedStartDay) {
-                    val emptyButton = Button(this).apply {
-                        text = " "
-                        setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent))
-                        layoutParams = LinearLayout.LayoutParams(0, 250, 1f)
-                    }
-                    dayRow.addView(emptyButton)
-                    dayCount++
-                }
-            }
-
-            val dayName = daysOfWeek[(dayCount) % 7]
+            val dayName = daysOfWeek[dayCount % 7]
             val dayButton = Button(this).apply {
                 text = "$dayName\n$currentDay"
-                textSize = 18f
+                textSize = 14f  // Reduced text size to fit text properly
                 gravity = Gravity.CENTER
-                layoutParams = LinearLayout.LayoutParams(250, 250).apply {
-                    setMargins(10, 10, 10, 10)
+                layoutParams = LinearLayout.LayoutParams(
+                    120,  // Reduced button width slightly
+                    LinearLayout.LayoutParams.MATCH_PARENT
+                ).apply {
+                    setMargins(5, 5, 5, 5)
                 }
-                setPadding(30, 30, 30, 30)
+                setPadding(10, 10, 10, 10)
                 background = ContextCompat.getDrawable(context, android.R.drawable.btn_default)
                 contentDescription = "Day $currentDay"
                 setOnClickListener { view ->
@@ -133,18 +99,12 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            dayRow.addView(dayButton)
+            daysContainer.addView(dayButton)
             currentDay++
             dayCount++
-
-            if (dayCount == 7) {
-                dayCount = 0
-            }
         }
 
-        daysContainer.addView(dayRow)
-
-        Log.d("Calendar", "Total Views Added: ${dayRow.childCount}")
+        Log.d("Calendar", "Total Views Added: ${daysContainer.childCount}")
     }
 
     private fun onDayClicked(view: View) {
@@ -153,3 +113,4 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, "Clicked on $day", Toast.LENGTH_SHORT).show()
     }
 }
+
