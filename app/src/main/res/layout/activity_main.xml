@@ -28,6 +28,7 @@
         android:id="@+id/Days"
         android:layout_width="match_parent"
         android:layout_height="120dp"
+        android:contentDescription="Scrollable list of days"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -40,12 +41,68 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:gravity="center_vertical"/>
+            android:gravity="center_vertical"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp">
+
+            <!-- Monday to Sunday with larger text and more spacing -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mon"
+                android:textSize="24sp"
+                android:contentDescription="Monday"
+                android:paddingEnd="30dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tue"
+                android:textSize="24sp"
+                android:contentDescription="Tuesday"
+                android:paddingEnd="30dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Wed"
+                android:textSize="24sp"
+                android:contentDescription="Wednesday"
+                android:paddingEnd="30dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Thu"
+                android:textSize="24sp"
+                android:contentDescription="Thursday"
+                android:paddingEnd="30dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fri"
+                android:textSize="24sp"
+                android:contentDescription="Friday"
+                android:paddingEnd="30dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sat"
+                android:textSize="24sp"
+                android:contentDescription="Saturday"
+                android:paddingEnd="30dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sun"
+                android:textSize="24sp"
+                android:contentDescription="Sunday"
+                android:paddingEnd="30dp" />
+
+        </LinearLayout>
     </HorizontalScrollView>
-
-
-
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
