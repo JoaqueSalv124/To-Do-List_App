@@ -1,6 +1,7 @@
 package com.to_do_listapp
 
-
+import androidx.recyclerview.widget.ItemTouchHelper
+import android.graphics.*
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -57,6 +58,49 @@ class MainActivity : AppCompatActivity() {
         }
         yearSpinner.adapter = yearAdapter
 
+
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                return false // No move action
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                taskAdapter.removeTask(position) // Delete task
+            }
+
+            override fun onChildDraw(
+                c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,
+                dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean
+            ) {
+                val itemView = viewHolder.itemView
+                val paint = Paint().apply { color = Color.RED }
+                val icon = ContextCompat.getDrawable(this@MainActivity, android.R.drawable.ic_delete)!!
+
+                // Draw red background only when swiping
+                if (dX < 0) {  // Ensures it's swiping left
+                    c.drawRect(
+                        itemView.right.toFloat() + dX, itemView.top.toFloat(),
+                        itemView.right.toFloat(), itemView.bottom.toFloat(), paint
+                    )
+
+                    // Show trash icon only when actively swiping
+                    if (isCurrentlyActive) {
+                        val iconMargin = (itemView.height - icon.intrinsicHeight) / 2
+                        val iconTop = itemView.top + (itemView.height - icon.intrinsicHeight) / 2
+                        val iconLeft = itemView.right - iconMargin - icon.intrinsicWidth
+                        val iconRight = itemView.right - iconMargin
+                        val iconBottom = iconTop + icon.intrinsicHeight
+
+                        icon.setBounds(iconLeft, iconTop, iconRight, iconBottom)
+                        icon.draw(c)
+                    }
+                }
+
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+            }
+        })
+        itemTouchHelper.attachToRecyclerView(recyclerView)
 
         // Set custom text size for spinner items
         fun setSpinnerTextSize(spinner: Spinner) {
@@ -118,6 +162,7 @@ class MainActivity : AppCompatActivity() {
             showAddTaskDialog()
         }
     }
+
 
 
     private fun updateCalendar(month: Int, year: Int, daysContainer: LinearLayout) {

@@ -41,8 +41,14 @@ class TaskAdapter(private val taskList: MutableList<Task>) :
 
     override fun getItemCount(): Int = taskList.size
 
+    fun removeTask(position: Int) {
+        taskList.removeAt(position)
+        notifyItemRemoved(position)
+    }
+
     fun addTask(task: Task) {
         taskList.add(task)
         notifyItemInserted(taskList.size - 1) // ✅ Forces RecyclerView to refresh
     }
 }
+
