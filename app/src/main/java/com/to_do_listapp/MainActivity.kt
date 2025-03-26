@@ -223,6 +223,7 @@ class MainActivity : AppCompatActivity() {
 
         val scrollView = findViewById<HorizontalScrollView>(R.id.daysScrollView)
         var todayButton: Button? = null
+        var selectedButton: Button? = null
 
         var dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1
 
@@ -234,11 +235,10 @@ class MainActivity : AppCompatActivity() {
                 text = "$dayName\n$day"
                 textSize = 12f
                 gravity = Gravity.CENTER
-                layoutParams = LinearLayout.LayoutParams(240, 240).apply {
+                layoutParams = LinearLayout.LayoutParams(240, 240).apply { // ✅ Fix button height
                     setMargins(5, 5, 5, 5)
                 }
-                background = ContextCompat.getDrawable(
-                    context,
+                background = ContextCompat.getDrawable(context,
                     if (formattedDate == selectedDate) R.drawable.selected_date_border
                     else R.drawable.calendar_button_bg
                 )
@@ -251,12 +251,14 @@ class MainActivity : AppCompatActivity() {
             }
 
             if (formattedDate == today) todayButton = dayButton
+            if (formattedDate == selectedDate) selectedButton = dayButton // ✅ Store selected date button
 
             daysContainer.addView(dayButton)
             dayOfWeek++
         }
 
-        todayButton?.let {
+        // ✅ Now scroll to either today or the selected date correctly
+        selectedButton?.let {
             scrollView.post { scrollView.smoothScrollTo(it.left, 0) }
         }
 
@@ -266,6 +268,7 @@ class MainActivity : AppCompatActivity() {
             taskAdapter.filterTasks(selectedDate) // Ensure taskAdapter is initialized before use
         }
     }
+
 
 
     private fun updateTodayTextView(todayTextView: TextView, selectedDate: String, today: String) {
