@@ -173,66 +173,64 @@ class MainActivity : AppCompatActivity() {
 
         val calendar = Calendar.getInstance()
         calendar.set(year, month, 1)
-
-        val daysOfWeek = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+        val daysOfWeek = listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
         val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+        val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        val todayTextView = findViewById<TextView>(R.id.Today)
 
-        val todayTextView = findViewById<TextView>(R.id.Today)  // ✅ Reference to TextView
-        val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date()) // ✅ Get today's date
+        if (selectedDate.isEmpty()) {
+            selectedDate = today // Automatically select today's date on app launch
+        }
 
-        var dayCount = calendar.get(Calendar.DAY_OF_WEEK) - 2
-        if (dayCount < 0) dayCount = 6
+        val scrollView = findViewById<HorizontalScrollView>(R.id.daysScrollView)
+        var todayButton: Button? = null
 
-        var currentDay = 1
+        var dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1
 
-        for (i in 1..daysInMonth) {
-            val dayName = daysOfWeek[dayCount % 7]
-            val formattedDate = String.format("%04d-%02d-%02d", year, month + 1, currentDay) // ✅ YYYY-MM-DD
+        for (day in 1..daysInMonth) {
+            val formattedDate = String.format("%04d-%02d-%02d", year, month + 1, day)
+            val dayName = daysOfWeek[dayOfWeek % 7]  // Get day of the week
 
             val dayButton = Button(this).apply {
-                text = "$dayName\n$currentDay"
+                text = "$dayName\n$day"
                 textSize = 12f
                 gravity = Gravity.CENTER
-                layoutParams = LinearLayout.LayoutParams(
-                    240,
-                    LinearLayout.LayoutParams.MATCH_PARENT
-                ).apply {
+                layoutParams = LinearLayout.LayoutParams(240, 240).apply {
                     setMargins(5, 5, 5, 5)
                 }
-                setPadding(10, 5, 10, 5)
-                background = ContextCompat.getDrawable(context, R.drawable.ripple_calendar_button)
-
+                background = ContextCompat.getDrawable(context,
+                    if (formattedDate == selectedDate) R.drawable.selected_date_border
+                    else R.drawable.calendar_button_bg
+                )
                 setOnClickListener {
-                    selectedDate = formattedDate  // ✅ Store selected date
-                    taskAdapter.filterTasks(selectedDate)  // ✅ Show tasks for this date
-
-                    // ✅ Convert YYYY-MM-DD to "Month Day, Year"
-                    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                    val dateObject = dateFormat.parse(selectedDate)
-
-                    val newFormat = SimpleDateFormat("MMMM d, yyyy", Locale.getDefault()) // ✅ New Format
-                    val displayDate = newFormat.format(dateObject!!) // Convert to formatted string
-
-                    // ✅ Update "Today" TextView based on selected date
-                    if (selectedDate == currentDate) {
-                        todayTextView.text = "Today"
-                    } else {
-                        todayTextView.text = displayDate  // Show formatted date
-                    }
-
-                    Toast.makeText(context, "Showing tasks for $displayDate", Toast.LENGTH_SHORT).show()
+                    selectedDate = formattedDate
+                    updateCalendar(month, year, daysContainer) // Refresh calendar
+                    taskAdapter.filterTasks(selectedDate) // Show tasks
+                    updateTodayTextView(todayTextView, formattedDate, today)
                 }
             }
 
+            if (formattedDate == today) todayButton = dayButton
+
             daysContainer.addView(dayButton)
-            currentDay++
-            dayCount++
+            dayOfWeek++
         }
 
+        todayButton?.let {
+            scrollView.post { scrollView.smoothScrollTo(it.left, 0) }
+        }
 
-    Log.d("Calendar", "Total Views Added: ${daysContainer.childCount}")
+        updateTodayTextView(todayTextView, selectedDate, today)
     }
 
+
+    private fun updateTodayTextView(todayTextView: TextView, selectedDate: String, today: String) {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val newFormat = SimpleDateFormat("MMMM d, yyyy", Locale.getDefault())
+        val dateObject = dateFormat.parse(selectedDate)
+
+        todayTextView.text = if (selectedDate == today) "Today" else newFormat.format(dateObject!!)
+    }
 
     private fun showAddTaskDialog() {
         if (selectedDate.isEmpty()) {

@@ -15,4 +15,5 @@
     <color name="unicorn">#d0b3cc</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
+    <color name="selected_date_outline">#F49AE0</color>
 </resources>
