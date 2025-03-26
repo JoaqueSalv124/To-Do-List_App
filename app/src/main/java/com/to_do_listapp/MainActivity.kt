@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity() {
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         val fabAddTask = findViewById<FloatingActionButton>(R.id.fabAddTask)
 
+
         val calendar = Calendar.getInstance()
 
         val fab = findViewById<FloatingActionButton>(R.id.fabAddTask)
@@ -62,7 +63,8 @@ class MainActivity : AppCompatActivity() {
         yearSpinner.adapter = yearAdapter
 
 
-        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+        val itemTouchHelper = ItemTouchHelper(object :
+            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
@@ -95,7 +97,8 @@ class MainActivity : AppCompatActivity() {
                     icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.baseline_edit_24)
                 } else if (dX < -100) { // Only show red when swiping left far enough
                     paint.color = Color.RED
-                    icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.baseline_delete_24)
+                    icon =
+                        ContextCompat.getDrawable(this@MainActivity, R.drawable.baseline_delete_24)
                 } else {
                     paint.color = Color.TRANSPARENT // Reset color when swipe is incomplete
                     icon = null
@@ -109,7 +112,8 @@ class MainActivity : AppCompatActivity() {
                 icon?.let {
                     val iconMargin = (itemView.height - it.intrinsicHeight) / 2
                     val iconTop = itemView.top + (itemView.height - it.intrinsicHeight) / 2
-                    val iconLeft = if (dX > 0) itemView.left + iconMargin else itemView.right - iconMargin - it.intrinsicWidth
+                    val iconLeft =
+                        if (dX > 0) itemView.left + iconMargin else itemView.right - iconMargin - it.intrinsicWidth
                     val iconRight = iconLeft + it.intrinsicWidth
                     val iconBottom = iconTop + it.intrinsicHeight
 
@@ -117,7 +121,15 @@ class MainActivity : AppCompatActivity() {
                     it.draw(c)
                 }
 
-                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                super.onChildDraw(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
             }
         })
         itemTouchHelper.attachToRecyclerView(recyclerView)
@@ -134,6 +146,7 @@ class MainActivity : AppCompatActivity() {
         setSpinnerTextSize(yearSpinner)
 
 
+
         // Set default to the current month and year
         monthSpinner.setSelection(calendar.get(Calendar.MONTH))
         yearSpinner.setSelection(calendar.get(Calendar.YEAR) - 2020)
@@ -141,7 +154,12 @@ class MainActivity : AppCompatActivity() {
 
         // Update the calendar based on the selected month and year
         monthSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parentView: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                parentView: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
                 val selectedMonth = position
                 val selectedYear = yearSpinner.selectedItem.toString().toInt()
                 updateCalendar(selectedMonth, selectedYear, daysContainer)
@@ -155,7 +173,12 @@ class MainActivity : AppCompatActivity() {
 
 
         yearSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parentView: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                parentView: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
                 val selectedYear = yearSpinner.selectedItem.toString().toInt()
                 val selectedMonth = monthSpinner.selectedItemPosition
                 updateCalendar(selectedMonth, selectedYear, daysContainer)
@@ -214,7 +237,8 @@ class MainActivity : AppCompatActivity() {
                 layoutParams = LinearLayout.LayoutParams(240, 240).apply {
                     setMargins(5, 5, 5, 5)
                 }
-                background = ContextCompat.getDrawable(context,
+                background = ContextCompat.getDrawable(
+                    context,
                     if (formattedDate == selectedDate) R.drawable.selected_date_border
                     else R.drawable.calendar_button_bg
                 )
@@ -267,7 +291,8 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton("Add") { dialog, _ ->
                 val taskText = taskInput.text.toString().trim()
                 if (taskText.isNotEmpty()) {
-                    val newTask = Task(taskText, false, selectedDate)  // ✅ Assign task to selected date
+                    val newTask =
+                        Task(taskText, false, selectedDate)  // ✅ Assign task to selected date
                     taskAdapter.addTask(newTask)
                 } else {
                     Toast.makeText(this, "Task cannot be empty!", Toast.LENGTH_SHORT).show()
@@ -305,7 +330,6 @@ class MainActivity : AppCompatActivity() {
             .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
             .show()
     }
-
-
 }
+
 
