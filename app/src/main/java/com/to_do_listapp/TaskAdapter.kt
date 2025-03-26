@@ -95,4 +95,23 @@ class TaskAdapter(private val context: Context) :
         taskList.addAll(savedTasks)
         notifyDataSetChanged()
     }
+
+    fun getTaskAt(position: Int): Task {
+        return filteredTasks[position] // Return the task at the given position
+    }
+
+    fun updateTask(position: Int, newDescription: String) {
+        val oldTask = filteredTasks[position] // Get the task from filtered list
+        val updatedTask = Task(newDescription, oldTask.isCompleted, oldTask.date) // Create new task instance
+
+        // Replace the task in the main list
+        val index = taskList.indexOfFirst { it.date == oldTask.date && it.description == oldTask.description }
+        if (index != -1) {
+            taskList[index] = updatedTask
+        }
+
+        saveTasks() // Save changes
+        filterTasks(oldTask.date) // Refresh UI with updated tasks
+    }
+
 }

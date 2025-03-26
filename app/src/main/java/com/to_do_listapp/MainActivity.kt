@@ -17,6 +17,7 @@ import java.util.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import java.text.SimpleDateFormat
+import android.graphics.drawable.Drawable
 import java.util.*
 
 
@@ -61,14 +62,24 @@ class MainActivity : AppCompatActivity() {
         yearSpinner.adapter = yearAdapter
 
 
-        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
                 return false // No move action
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
-                taskAdapter.removeTask(position) // Delete task
+                if (direction == ItemTouchHelper.LEFT) {
+                    taskAdapter.removeTask(position) // Delete task
+                } else if (direction == ItemTouchHelper.RIGHT) {
+                    val task = taskAdapter.getTaskAt(position) // Retrieve task
+                    showEditTaskDialog(task, position) // Open edit dialog
+                }
+                taskAdapter.notifyItemChanged(position) // Reset background after swipe action
             }
 
             override fun onChildDraw(
@@ -76,29 +87,34 @@ class MainActivity : AppCompatActivity() {
                 dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean
             ) {
                 val itemView = viewHolder.itemView
-                val paint = Paint().apply { color = Color.RED }
-                val icon = ContextCompat.getDrawable(this@MainActivity,
-                    R.drawable.baseline_delete_24
-                )!!
+                val paint = Paint()
+                val icon: Drawable?
 
-                // Draw red background only when swiping
-                if (dX < 0) {  // Ensures it's swiping left
-                    c.drawRect(
-                        itemView.right.toFloat() + dX, itemView.top.toFloat(),
-                        itemView.right.toFloat(), itemView.bottom.toFloat(), paint
-                    )
+                if (dX > 100) { // Only show blue when swiping right far enough
+                    paint.color = Color.BLUE
+                    icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.baseline_edit_24)
+                } else if (dX < -100) { // Only show red when swiping left far enough
+                    paint.color = Color.RED
+                    icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.baseline_delete_24)
+                } else {
+                    paint.color = Color.TRANSPARENT // Reset color when swipe is incomplete
+                    icon = null
+                }
 
-                    // Show trash icon only when actively swiping
-                    if (isCurrentlyActive) {
-                        val iconMargin = (itemView.height - icon.intrinsicHeight) / 2
-                        val iconTop = itemView.top + (itemView.height - icon.intrinsicHeight) / 2
-                        val iconLeft = itemView.right - iconMargin - icon.intrinsicWidth
-                        val iconRight = itemView.right - iconMargin
-                        val iconBottom = iconTop + icon.intrinsicHeight
+                c.drawRect(
+                    itemView.left.toFloat(), itemView.top.toFloat(),
+                    itemView.right.toFloat(), itemView.bottom.toFloat(), paint
+                )
 
-                        icon.setBounds(iconLeft, iconTop, iconRight, iconBottom)
-                        icon.draw(c)
-                    }
+                icon?.let {
+                    val iconMargin = (itemView.height - it.intrinsicHeight) / 2
+                    val iconTop = itemView.top + (itemView.height - it.intrinsicHeight) / 2
+                    val iconLeft = if (dX > 0) itemView.left + iconMargin else itemView.right - iconMargin - it.intrinsicWidth
+                    val iconRight = iconLeft + it.intrinsicWidth
+                    val iconBottom = iconTop + it.intrinsicHeight
+
+                    it.setBounds(iconLeft, iconTop, iconRight, iconBottom)
+                    it.draw(c)
                 }
 
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
@@ -221,6 +237,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         updateTodayTextView(todayTextView, selectedDate, today)
+
+        if (::taskAdapter.isInitialized) {
+            taskAdapter.filterTasks(selectedDate) // Ensure taskAdapter is initialized before use
+        }
     }
 
 
@@ -259,11 +279,33 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     private fun onDayClicked(view: View) {
         val button = view as Button
         val day = button.text
         Toast.makeText(this, "Clicked on $day", Toast.LENGTH_SHORT).show()
     }
+
+    private fun showEditTaskDialog(task: Task, position: Int) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_task, null)
+        val taskInput = dialogView.findViewById<EditText>(R.id.editTask)
+        taskInput.setText(task.description) // Set current task description
+
+        AlertDialog.Builder(this)
+            .setTitle("Edit Task")
+            .setView(dialogView)
+            .setPositiveButton("Save") { dialog, _ ->
+                val updatedText = taskInput.text.toString().trim()
+                if (updatedText.isNotEmpty()) {
+                    taskAdapter.updateTask(position, updatedText) // Update task in adapter
+                } else {
+                    Toast.makeText(this, "Task cannot be empty!", Toast.LENGTH_SHORT).show()
+                }
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+            .show()
+    }
+
+
 }
 
