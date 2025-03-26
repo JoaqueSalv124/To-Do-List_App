@@ -59,11 +59,18 @@ class TaskAdapter(private val context: Context) :
     }
 
     fun removeTask(position: Int) {
-        val removedTask = filteredTasks[position]  // Find task in filtered list
-        taskList.removeIf { it.description == removedTask.description && it.date == removedTask.date }
+        val removedTask = filteredTasks[position]  // Get task from filtered list
+
+        // Find and remove only the FIRST matching task in the full task list
+        taskList.indexOfFirst { it.description == removedTask.description && it.date == removedTask.date }
+            .takeIf { it != -1 }?.let { index ->
+                taskList.removeAt(index)
+            }
+
         saveTasks()
-        filterTasks(removedTask.date)  // ✅ Refresh the filtered list
+        filterTasks(removedTask.date)  // Refresh the filtered list
     }
+
 
     fun filterTasks(selectedDate: String) {
         filteredTasks = taskList.filter { it.date == selectedDate }.toMutableList()
